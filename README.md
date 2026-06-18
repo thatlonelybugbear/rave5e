@@ -41,7 +41,7 @@ Formatted example:
 }
 ```
 
-The evaluator reads `effect.actor.getRollData()` plus Rave-provided item and activity context when a roll is being prepared.
+Conditions use the same actor roll data that dnd5e prepares for formulas, plus a few extra Rave 5e paths for items, effects, movement, and the cyrrent roll.
 
 ## Examples
 
@@ -97,9 +97,7 @@ Active Effect change:
 | --- | --- | --- |
 | `system.bonuses.mwak.damage` | `Rave 5e` | `{"op":"add","value":"2d6[fire]","when":{"path":"item.name","eq":"Scimitar"}}` |
 
-## Added roll data paths
-
-Rave 5e adds derived paths for conditions. Autocomplete marks module-provided paths with `(*)`.
+## Added Data Paths
 
 | Path | Meaning |
 | --- | --- |
@@ -125,7 +123,7 @@ Rave 5e adds derived paths for conditions. Autocomplete marks module-provided pa
 
 ## Change operations
 
-`op` controls which normal Active Effect operation is emitted when the condition passes.
+`op` controls what happens when the condition passes.
 
 | op | Effect |
 | --- | --- |
@@ -139,11 +137,11 @@ Rave 5e adds derived paths for conditions. Autocomplete marks module-provided pa
 
 ## Conditions
 
-Every condition reads from actor roll data plus Rave-provided context. Missing paths fail closed unless `exists` is used.
+Conditions check actor data and Rave 5e's added paths. If a path is missing, the condition does not pass unless you are using `exists` to check for that.
 
 | Condition | Example |
 | --- | --- |
-| path truthy | `{"path":"attributes.ac.equippedArmor"}` |
+| path has a value | `{"path":"attributes.ac.equippedArmor"}` |
 | path exists | `{"path":"attributes.ac.equippedArmor","exists":true}` |
 | path missing | `{"path":"attributes.ac.equippedArmor","exists":false}` |
 | equals | `{"path":"abilities.dex.mod","eq":3}` |
