@@ -6,7 +6,7 @@ Available from my [Ko-fi shop](<https://ko-fi.com/thatlonelybugbear/shop>) or in
 
 ## Release Status
 
-Rave 5e is currently an early alpha/beta release. The core conditional Active Effect workflow is usable, but test it on a copy of a world before using it in a long-running game.
+Rave 5e is currently an early beta release. The core conditional Active Effect workflow is usable, but test it on a copy of a world before using it in a long-running game.
 
 Known early-release limits:
 
