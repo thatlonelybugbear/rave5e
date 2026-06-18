@@ -13,7 +13,7 @@ Known early-release limits:
 - Built for Foundry VTT v14 and dnd5e 5.3.3+.
 - Conditions are actor-local. They do not inspect targets, opponents, templates, chat cards, or dialog state.
 - Item and activity paths are only available while an item/activity roll is being prepared.
-- Missing condition paths fail closed unless `exists` is used.
+- Conditions that look for a missing path simply do not apply the effect. Use `exists` when you intentionally want to check whether a path is present or missing.
 - Rave 5e changes are stored as a custom Active Effect change type. If the module is disabled, those rows may not be editable or meaningful until the module is re-enabled.
 
 # How to Use
