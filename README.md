@@ -131,9 +131,8 @@ Example:
 | `items.<type>.names` | Actor item names grouped by item type. |
 | `equippedItems.names` | Equipped actor item names. |
 | `equippedItems.identifiers` | Equipped actor item identifiers. |
-| `effects.names` | Enabled actor and owned-item effect names visible to Rave. |
-| `effects.entries` | Enabled actor and owned-item effect entries visible to Rave. |
-| `effect.<id>.*` | Enabled actor or owned-item effect data by effect id, including `name`, `uuid`, `id`, `disabled`, and `suppressed`. |
+| `effects.names` | Enabled effect names visible to Rave. |
+| `effect.<id>.*` | Effect data by effect id, including `name`, `uuid`, `id`, `disabled`, and `suppressed`. |
 | `flags.*` | Actor flags that currently exist on the actor. |
 | `movementLastSegment` | Combat movement cost for the actor token's most recent movement segment. |
 | `movementTurn` | Combat movement cost for the actor token this turn. |
