@@ -14,7 +14,6 @@ Known early-release limits:
 - Conditions are actor-local. They do not inspect targets, enemies, templates, chat cards, or roll dialog choices.
 - If a condition checks a path that is not available, the effect does not apply. Use `exists` when you want to check whether a path is present or missing.
 - Rave 5e changes are saved on the Active Effect. If the module is disabled, those changes stay there, but they only become Rave-editable and affect behavior again when the module is re-enabled.
-- Currently incompatible with DAE. A compatibility workaround is planned for a future DAE release. Ask me in Discord if you need the workaround before then.
 
 # How to Use
 
@@ -29,7 +28,7 @@ Inline example:
 ```
 This means: add 2 when the actor has no equipped armor.
 
-Conditions can check normal dnd5e actor data, plus extra Rave 5e paths for items, effects, and movement.
+Conditions can check normal dnd5e actor data, plus extra Rave 5e paths for items, owned effects, and movement.
 
 ## Examples
 
@@ -131,8 +130,8 @@ Example:
 | `items.<type>.names` | Actor item names grouped by item type. |
 | `equippedItems.names` | Equipped actor item names. |
 | `equippedItems.identifiers` | Equipped actor item identifiers. |
-| `effects.names` | Enabled effect names visible to Rave. |
-| `effect.<id>.*` | Effect data by effect id, including `name`, `uuid`, `id`, `disabled`, and `suppressed`. |
+| `effects.names` | Enabled actor and owned-item effect names visible to Rave. |
+| `effect.<id>.*` | Enabled actor or owned-item effect data by effect id, including `name`, `uuid`, `id`, `disabled`, and `suppressed`. |
 | `flags.*` | Actor flags that currently exist on the actor. |
 | `movementLastSegment` | Combat movement cost for the actor token's most recent movement segment. |
 | `movementTurn` | Combat movement cost for the actor token this turn. |
