@@ -190,3 +190,9 @@ Conditions check actor data and Rave 5e's added paths. If a path is missing, the
 | absolute | `{"abs":-2}` |
 | minimum | `{"min":[1,2,3]}` |
 | maximum | `{"max":[1,2,3]}` |
+
+## Showcase
+
+[System Trait keys](https://github.com/user-attachments/assets/3ba4357d-bb4d-4c51-bc75-c12c57260cad)
+
+[System bonuses mwak keys](https://github.com/user-attachments/assets/23d08b18-608a-4224-9b1f-157184038928)
