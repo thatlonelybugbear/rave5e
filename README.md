@@ -2,7 +2,7 @@
 
 A premium Foundry VTT module for creating Active Effects with user-defined conditional logic in D&D 5e.
 
-Rave 5e is currently available through Vanguard-tier and higher membership on [Patreon](<https://www.patreon.com/thatlonelybugbear>) or [Ko-fi](<https://ko-fi.com/thatlonelybugbear>).
+Rave 5e is currently in early release, available through Vanguard-tier and higher membership on [Patreon](<https://www.patreon.com/thatlonelybugbear>) or [Ko-fi](<https://ko-fi.com/thatlonelybugbear>).
 
 ## Release Status
 
