@@ -2,7 +2,11 @@
 
 A premium Foundry VTT module for creating Active Effects with user-defined conditional logic in D&D 5e.
 
+<<<<<<< HEAD
 Rave 5e is currently available through Vanguard-tier and higher membership on [Patreon](<https://www.patreon.com/thatlonelybugbear>).
+=======
+Rave 5e is currently in early release, available through Vanguard-tier and higher membership on [Patreon](<https://www.patreon.com/thatlonelybugbear>) or [Ko-fi](<https://ko-fi.com/thatlonelybugbear>).
+>>>>>>> 7388e55847855f95788b8837b82e64ac6e0bd9f2
 
 ## Release Status
 
@@ -229,3 +233,8 @@ Formula-style strings can also use roll-data references directly:
 | runtime scaling formula | `"@scaling * @gridDistance"` |
 
 Use the `@` prefix for roll-data references in formula-style strings.
+## Showcase
+
+[System Trait keys](https://github.com/user-attachments/assets/3ba4357d-bb4d-4c51-bc75-c12c57260cad)
+
+[System bonuses mwak keys](https://github.com/user-attachments/assets/23d08b18-608a-4224-9b1f-157184038928)
