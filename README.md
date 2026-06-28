@@ -2,11 +2,7 @@
 
 A premium Foundry VTT module for creating Active Effects with user-defined conditional logic in D&D 5e.
 
-<<<<<<< HEAD
 Rave 5e is currently available through Vanguard-tier and higher membership on [Patreon](<https://www.patreon.com/thatlonelybugbear>).
-=======
-Rave 5e is currently in early release, available through Vanguard-tier and higher membership on [Patreon](<https://www.patreon.com/thatlonelybugbear>) or [Ko-fi](<https://ko-fi.com/thatlonelybugbear>).
->>>>>>> 7388e55847855f95788b8837b82e64ac6e0bd9f2
 
 ## Release Status
 
