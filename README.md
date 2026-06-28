@@ -2,7 +2,7 @@
 
 A premium Foundry VTT module for creating Active Effects with user-defined conditional logic in D&D 5e.
 
-Rave 5e is currently available through Vanguard-tier and higher membership on [Patreon](<https://www.patreon.com/thatlonelybugbear>) or [Ko-fi](<https://ko-fi.com/thatlonelybugbear>).
+Rave 5e is currently available through Vanguard-tier and higher membership on [Patreon](<https://www.patreon.com/thatlonelybugbear>).
 
 ## Release Status
 
@@ -100,13 +100,43 @@ Example:
 
 ### Direct Item Preparation Keys
 
-Use item keys such as `activities[attack].damage.parts`, `name`, or `img` when you want the owned item itself to temporarily change. This can work like a conditional enchantment without permanently editing the item.
+Use item keys such as `activities[attack].damage.parts`, `system.damage.types`, `name`, or `img` when you want the owned item itself to temporarily change. This can work like a conditional enchantment without permanently editing the item.
 
 Example:
 
 | Key | Type | Value |
 | --- | --- | --- |
 | `activities[attack].damage.parts` | `Rave 5e` | `{"op":"add","value":["2d6","fire"],"when":{"path":"item.type","eq":"weapon"}}` |
+
+Add fire to the available damage types for matching item damage parts:
+
+| Key | Type | Value |
+| --- | --- | --- |
+| `system.damage.types` | `Rave 5e` | `{"op":"add","value":"[fire]","when":{"path":"item.name","includes":"Dagger"}}` |
+
+### Runtime Item Changes
+
+Enable Runtime when an item change needs activity-use data such as scaling choices. Runtime changes are evaluated during activity use instead of normal item preparation.
+
+In the Rave 5e Editor, the inline Runtime checkbox adds `"runtimeOnly":true` to the generated JSON. Use it when the value or condition needs data that only exists while an activity is being used, such as `@scaling`, `@scaling.increase`, or the current `activity`.
+
+Example: set a spherical save template size from the chosen scaling value and the scene grid distance.
+
+| Key | Type | Value |
+| --- | --- | --- |
+| `activities[save].target.template.size` | `Rave 5e` | `{"op":"override","value":"@scaling * @gridDistance","when":{"all":[{"path":"activity.target.template.type","eq":"sphere"},{"path":"scaling.increase","gt":0}]},"runtimeOnly":true}` |
+
+### Conditional Condition Immunity
+
+Condition immunity can be conditional too. This also applies when dnd5e creates condition effects from normal statuses or rider statuses.
+
+Example: gain immunity to poisoned only when the origin item name contains Elf Poison.
+
+| Key | Type | Value |
+| --- | --- | --- |
+| `system.traits.ci.value` | `Rave 5e` | `{"op":"add","value":"poisoned","when":{"path":"item.name","includes":"Elf Poison"}}` |
+
+Custom condition immunity names are stored by dnd5e as a semicolon-separated string. Conditional handling for custom trait text such as `system.traits.ci.custom` is intentionally deferred for a later pass.
 
 ## Paths You Can Check
 
@@ -117,11 +147,11 @@ Example:
 | `item.id` | The item's id, when available. |
 | `item.type` | The item's type, such as `weapon`, `spell`, or `equipment`. |
 | `item.uuid` | The item's UUID, when available. |
-| `item.system.*` | The item's system data, when available. |
 | `activity.name` | The rolling activity's name, when available. |
 | `activity.id` | The rolling activity's id, when available. |
 | `activity.type` | The rolling activity's type, when available. |
 | `activity.uuid` | The rolling activity's UUID, when available. |
+| `gridDistance` | The current scene grid distance. Use `@gridDistance` inside formula-style values. |
 | `attributes.hp.pct` | Current hit points as a percentage of maximum hit points. |
 | `attributes.hd.pct` | Current hit dice as a percentage of maximum hit dice. |
 | `attributes.encumbrance.pct` | Current encumbrance as a percentage of maximum encumbrance. |
@@ -190,3 +220,12 @@ Conditions check actor data and Rave 5e's added paths. If a path is missing, the
 | absolute | `{"abs":-2}` |
 | minimum | `{"min":[1,2,3]}` |
 | maximum | `{"max":[1,2,3]}` |
+
+Formula-style strings can also use roll-data references directly:
+
+| Value | Example |
+| --- | --- |
+| actor formula | `"10 + @abilities.dex.mod + @abilities.wis.mod"` |
+| runtime scaling formula | `"@scaling * @gridDistance"` |
+
+Use the `@` prefix for roll-data references in formula-style strings.
