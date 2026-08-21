@@ -30,6 +30,7 @@ const DND5E_ACTIVE_EFFECT_WIKI = 'https://github.com/foundryvtt/dnd5e/wiki/Activ
 const README_PACK = `${MODULE_ID}.rave5e-readme`;
 const RAVE_HANDLING_LABEL = '*';
 const MAX_DEPTH = 24;
+const actorContexts = new WeakMap();
 let generatedJsonExpanded = false;
 const conditionalEditorApps = new Map();
 
@@ -262,9 +263,26 @@ function patchActorApplyActiveEffects() {
 	if (!cls?.prototype.applyActiveEffects || cls.prototype._rave5eConditionalStatusPatched) return;
 	const wrapper = function (wrapped, ...args) {
 		const phase = args[0];
-		const result = wrapped(...args);
-		if (phase === 'initial') filterConditionallySuppressedStatuses(this);
-		return result;
+		const restored = [];
+		for (const effect of this.allApplicableEffects?.() ?? []) {
+			for (const change of effect.changes ?? []) {
+				if (!isRaveChange(change)) continue;
+				const resolved = resolveRaveChange(change, effect);
+				restored.push([change, change.key, change.type]);
+				change.key = resolved.key;
+				change.type = CHANGE_TYPE;
+			}
+		}
+		try {
+			const result = wrapped(...args);
+			if (phase === 'initial') filterConditionallySuppressedStatuses(this);
+			return result;
+		} finally {
+			for (const [change, key, type] of restored) {
+				change.key = key;
+				change.type = type;
+			}
+		}
 	};
 	if (globalThis.libWrapper?.register) {
 		globalThis.libWrapper.register(MODULE_ID, 'CONFIG.Actor.documentClass.prototype.applyActiveEffects', wrapper, 'WRAPPER');
@@ -1049,7 +1067,7 @@ function renderConditionRow(condition = DEFAULT_CONDITION_ROW, index = 0) {
             <select name="condition-operator">${CONDITION_OPERATOR_OPTIONS.map((op) => `<option value="${op.value}" title="${escapeHTML(localize(op.hint))}"${op.value === condition.operator ? ' selected' : ''}>${localize(op.label)}</option>`).join('')}</select>
           </div>
         </div>
-        <div class="form-group rave5e-condition-compare-group">
+		<div class="form-group rave5e-condition-compare-group"${['truthy', 'exists'].includes(condition.operator) ? ' hidden' : ''}>
           <label>${localize('RAVE5E.Editor.Compare.Label')} ${info('RAVE5E.Editor.Compare.Hint')}</label>
           <div class="form-fields rave5e-inline-field">
             <input type="text" name="condition-compare" value="${escapeHTML(condition.compare)}" placeholder="${escapeHTML(getConditionComparePlaceholder(condition.operator))}">
@@ -1243,9 +1261,11 @@ function initializeEditorJsonSync(root) {
 function updateConditionCompareVisibility(form) {
 	form.querySelectorAll('.rave5e-condition-row').forEach((row) => {
 		const operator = row.querySelector(`[name="condition-operator"]`)?.value;
+		const group = row.querySelector('.rave5e-condition-compare-group');
 		const input = row.querySelector(`[name="condition-compare"]`);
 		if (!input) return;
 		const disabled = ['truthy', 'exists'].includes(operator);
+		if (group) group.hidden = disabled;
 		input.disabled = disabled;
 		input.placeholder = getConditionComparePlaceholder(operator);
 		const expand = row.querySelector('.rave5e-condition-compare-group .rave5e-field-expand');
@@ -1340,10 +1360,11 @@ function getConditionRow(condition) {
 		row = row.not;
 	}
 	const operator = getConditionOperator(row);
+	if (operator === 'exists' && row.exists === false) negate = !negate;
 	return {
 		path: typeof row.path === 'string' ? row.path : '',
 		operator,
-		compare: stringifyEditorValue(row[operator]),
+		compare: operator === 'exists' ? '' : stringifyEditorValue(row[operator]),
 		negate,
 	};
 }
@@ -1617,7 +1638,7 @@ function normalizeElement(element) {
 	return null;
 }
 
-function applyConditionalChange(actor, change, { replacementData, modifyTarget = true, applyChange } = {}) {
+function applyConditionalChange(actor, change, { field, replacementData, modifyTarget = true, applyChange } = {}) {
 	if (actor?.documentName !== 'Actor') return;
 	if (getEffectActor(change.effect) !== actor) return;
 	change = resolveRaveChange(change);
@@ -1633,7 +1654,8 @@ function applyConditionalChange(actor, change, { replacementData, modifyTarget =
 		return;
 	}
 
-	const value = evaluateValue(spec.value, rollData);
+	const isFormulaField = field instanceof game.dnd5e.dataModels.fields.FormulaField;
+	const value = isFormulaField && typeof spec.value === 'string' ? spec.value : evaluateValue(spec.value, rollData);
 	if (value === undefined) return;
 	if (isActivityBonusKey(change.key) && value && typeof value === 'object') return warn(change, 'activity bonus values must resolve to a number or formula string');
 
@@ -1817,6 +1839,13 @@ function readPath(data, path) {
 	if (path.startsWith('__') || path.includes('.__')) return undefined;
 	const value = foundry.utils.getProperty(data, path);
 	if (value !== undefined) return value;
+	if (path.startsWith('attributes.ac.equipped')) {
+		const actor = actorContexts.get(data);
+		for (const [root, item] of Object.entries(getEquippedArmor(actor))) {
+			if (path === root) return item;
+			if (path.startsWith(`${root}.`)) return foundry.utils.getProperty(item, path.slice(root.length + 1));
+		}
+	}
 	if (path === 'attributes.hp.pct') return computeHitPointPercentage(foundry.utils.getProperty(data, 'attributes.hp'));
 	if (path === 'attributes.hd.pct') return computePercentage(foundry.utils.getProperty(data, 'attributes.hd.value'), foundry.utils.getProperty(data, 'attributes.hd.max'));
 	if (path === 'attributes.encumbrance.pct') return computePercentage(foundry.utils.getProperty(data, 'attributes.encumbrance.value'), foundry.utils.getProperty(data, 'attributes.encumbrance.max'));
@@ -1844,12 +1873,27 @@ function computePercentage(value, max) {
 
 function buildContext(actor, { replacementData, effect, item, activity } = {}) {
 	const data = replacementData ?? activity?.getRollData?.() ?? item?.getRollData?.() ?? actor.getRollData();
+	actorContexts.set(data, actor);
 	foundry.utils.setProperty(data, 'flags', actor.flags ?? {});
 	foundry.utils.setProperty(data, 'gridDistance', canvas?.grid?.distance);
 	addItemContext(data, item ?? getEffectContextItem(effect));
 	addActorEffectsContext(data, actor);
 	defineLazyActorRollDataViews(data, actor);
 	return data;
+}
+
+function getEquippedArmor(actor) {
+	let equippedArmor;
+	let equippedShield;
+	for (const item of actor?.itemTypes?.equipment ?? []) {
+		if (!item.system?.equipped || !(item.system.type?.value in (CONFIG.DND5E?.armorTypes ?? {}))) continue;
+		if (item.system.type.value === 'shield') equippedShield ??= item;
+		else equippedArmor ??= item;
+	}
+	return {
+		'attributes.ac.equippedArmor': equippedArmor,
+		'attributes.ac.equippedShield': equippedShield,
+	};
 }
 
 function addItemContext(data, item) {

@@ -1,3 +1,9 @@
+## v14.533.4
+* Fixed persisted Rave changes not invoking the registered change handler during actor preparation.
+* Fixed unarmored conditions by resolving equipped armor and shields before dnd5e prepares Armor Class.
+* Preserved formula-field values until dnd5e resolves derived roll data such as ability modifiers.
+* Fixed `exists: false` editor round-tripping and hid the unused Compare field for presence checks.
+
 ## v14.533.3
 * First public release of Rave 5e.
 * Updated Active Effect integration for Foundry VTT 14.365 and later.

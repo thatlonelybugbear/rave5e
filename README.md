@@ -1,6 +1,6 @@
 # Rules-Aware Variable Effects for 5e
 
-A Foundry VTT module for creating D&D 5e Active Effects with user-defined conditions, values, and change operations.
+A Foundry VTT module for creating D&D 5e Active Effects with user-defined conditions, values, and change operations, serving as a possible precursor to the expanded Active Effect rules planned for dnd5e v6.
 Personal, non-commercial use is permitted subject to the terms in [LICENSE](https://github.com/thatlonelybugbear/rave5e/blob/main/LICENSE). No other rights are granted without the author's written permission.
 
 ## Release Status
@@ -14,14 +14,14 @@ Known early-release limits:
 
 ## How to Use
 
-Create or edit an Active Effect and add a change row. Select `Rave 5e` as its change type, choose the attribute key, and open the Rave 5e Editor.
-The editor generates a small JSON value. `op` says what to do, `value` is what to apply, and `when` says when the change applies. Conditions compare a `path` using operators such as `eq`, `gt`, `includes`, or `exists`.
+Create or edit an Active Effect and add a change row. Select `Rave 5e` as its change type, choose the attribute key, and open the Rave 5e Editor. The editor generates a small JSON value. `op` says what to do, `value` is what to apply, and `when` says when the change applies. Conditions compare a `path` using operators such as `eq`, `gt`, `includes`, or `exists`.
 
 Inline example:
 
 ```json
-{"op":"add","value":2,"when":{"path":"attributes.ac.equippedArmor","exists":false}}
+{ "op": "add", "value": 2, "when": { "path": "attributes.ac.equippedArmor", "exists": false } }
 ```
+
 This means: add 2 when the actor has no equipped armor.
 
 Conditions can check normal dnd5e actor data, plus extra Rave 5e paths for items, owned effects, and movement.
@@ -55,9 +55,9 @@ While you aren't wearing any armor, your base Armor Class equals 10 plus your De
 
 Active Effect change:
 
-| Key | Type | Value |
-| --- | --- | --- |
-| `system.attributes.ac.calc` | `Rave 5e` | `{"op":"override","value":"custom","when":{"path":"attributes.ac.equippedArmor","exists":false}}` |
+| Key                            | Type      | Value                                                                                                                                   |
+| ------------------------------ | --------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `system.attributes.ac.calc`    | `Rave 5e` | `{"op":"override","value":"custom","when":{"path":"attributes.ac.equippedArmor","exists":false}}`                                       |
 | `system.attributes.ac.formula` | `Rave 5e` | `{"op":"override","value":"10 + @abilities.dex.mod + @abilities.con.mod","when":{"path":"attributes.ac.equippedArmor","exists":false}}` |
 
 ### Scimitar Attack Bonus
@@ -66,8 +66,8 @@ Add +2 to attack rolls made with an item named Scimitar.
 
 Active Effect change:
 
-| Key | Type | Value |
-| --- | --- | --- |
+| Key                          | Type      | Value                                                                  |
+| ---------------------------- | --------- | ---------------------------------------------------------------------- |
 | `system.bonuses.mwak.attack` | `Rave 5e` | `{"op":"add","value":"2","when":{"path":"item.name","eq":"Scimitar"}}` |
 
 ### Scimitar Fire Damage
@@ -76,8 +76,8 @@ Add 2d6 fire damage to damage rolls made with an item named Scimitar.
 
 Active Effect change:
 
-| Key | Type | Value |
-| --- | --- | --- |
+| Key                          | Type      | Value                                                                          |
+| ---------------------------- | --------- | ------------------------------------------------------------------------------ |
 | `system.bonuses.mwak.damage` | `Rave 5e` | `{"op":"add","value":"2d6[fire]","when":{"path":"item.name","eq":"Scimitar"}}` |
 
 ## Item-aware Changes
@@ -90,8 +90,8 @@ Use keys such as `system.bonuses.mwak.attack` and `system.bonuses.mwak.damage` w
 
 Example:
 
-| Key | Type | Value |
-| --- | --- | --- |
+| Key                          | Type      | Value                                                                                  |
+| ---------------------------- | --------- | -------------------------------------------------------------------------------------- |
 | `system.bonuses.mwak.damage` | `Rave 5e` | `{"op":"add","value":"2d8[cold]","when":{"path":"item.name","in":["Dagger","Staff"]}}` |
 
 ### Direct Item Preparation Keys
@@ -100,14 +100,14 @@ Use item keys such as `activities[<activity-id>].damage.parts`, `system.damage.t
 
 Example:
 
-| Key | Type | Value |
-| --- | --- | --- |
+| Key                               | Type      | Value                                                                           |
+| --------------------------------- | --------- | ------------------------------------------------------------------------------- |
 | `activities[attack].damage.parts` | `Rave 5e` | `{"op":"add","value":["2d6","fire"],"when":{"path":"item.type","eq":"weapon"}}` |
 
 Add fire to the available damage types for matching item damage parts:
 
-| Key | Type | Value |
-| --- | --- | --- |
+| Key                   | Type      | Value                                                                           |
+| --------------------- | --------- | ------------------------------------------------------------------------------- |
 | `system.damage.types` | `Rave 5e` | `{"op":"add","value":"[fire]","when":{"path":"item.name","includes":"Dagger"}}` |
 
 ### Runtime Item Changes
@@ -128,8 +128,8 @@ Condition immunity can be conditional too. This also applies when dnd5e creates 
 
 Example: gain immunity to poisoned only when the origin item name contains Elf Poison.
 
-| Key | Type | Value |
-| --- | --- | --- |
+| Key                      | Type      | Value                                                                                 |
+| ------------------------ | --------- | ------------------------------------------------------------------------------------- |
 | `system.traits.ci.value` | `Rave 5e` | `{"op":"add","value":"poisoned","when":{"path":"item.name","includes":"Elf Poison"}}` |
 
 Custom condition immunity names are stored by dnd5e as a semicolon-separated string. Conditional handling for custom trait text such as `system.traits.ci.custom` is intentionally deferred for a later pass.
@@ -166,62 +166,62 @@ Custom condition immunity names are stored by dnd5e as a semicolon-separated str
 
 `op` controls what happens when the condition passes.
 
-| op | Effect |
-| --- | --- |
-| `add` | Adds the value to the target. |
-| `subtract` | Subtracts the value from the target. |
-| `override` | Replaces the target with the value. |
-| `upgrade` | Replaces the target only if the value is higher. |
-| `downgrade` | Replaces the target only if the value is lower. |
-| `multiply` | Multiplies the target by the value. |
-| `toggle` | Adds or removes the value from Set and array targets, or flips a boolean target. |
+| op          | Effect                                                                           |
+| ----------- | -------------------------------------------------------------------------------- |
+| `add`       | Adds the value to the target.                                                    |
+| `subtract`  | Subtracts the value from the target.                                             |
+| `override`  | Replaces the target with the value.                                              |
+| `upgrade`   | Replaces the target only if the value is higher.                                 |
+| `downgrade` | Replaces the target only if the value is lower.                                  |
+| `multiply`  | Multiplies the target by the value.                                              |
+| `toggle`    | Adds or removes the value from Set and array targets, or flips a boolean target. |
 
 ## Conditions
 
 Conditions check actor data and Rave 5e's added paths. If a path is missing, the condition does not pass unless you are using `exists` to check for that.
 
-| Condition | Example |
-| --- | --- |
-| path has a value | `{"path":"attributes.ac.equippedArmor"}` |
-| path exists | `{"path":"attributes.ac.equippedArmor","exists":true}` |
-| path missing | `{"path":"attributes.ac.equippedArmor","exists":false}` |
-| equals | `{"path":"abilities.dex.mod","eq":3}` |
-| not equals | `{"path":"details.type.value","ne":"undead"}` |
-| greater than | `{"path":"attributes.hp.value","gt":0}` |
-| greater or equal | `{"path":"abilities.str.value","gte":13}` |
-| less than | `{"path":"attributes.hp.value","lt":10}` |
-| less or equal | `{"path":"attributes.exhaustion","lte":2}` |
-| actor value is one of these values | `{"path":"details.type.value","in":["humanoid","fiend"]}` |
-| actor array or Set contains this value | `{"path":"traits.languages.value","includes":"elvish"}` |
-| all pass | `{"all":[{"path":"attributes.hp.pct","gt":50},{"path":"attributes.ac.equippedArmor","exists":false}]}` |
-| any passes | `{"any":[{"path":"traits.di.value","includes":"fire"},{"path":"traits.dr.value","includes":"fire"}]}` |
-| not | `{"not":{"path":"attributes.ac.equippedArmor"}}` |
+| Condition                              | Example                                                                                                |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| path has a value                       | `{"path":"attributes.ac.equippedArmor"}`                                                               |
+| path exists                            | `{"path":"attributes.ac.equippedArmor","exists":true}`                                                 |
+| path missing                           | `{"path":"attributes.ac.equippedArmor","exists":false}`                                                |
+| equals                                 | `{"path":"abilities.dex.mod","eq":3}`                                                                  |
+| not equals                             | `{"path":"details.type.value","ne":"undead"}`                                                          |
+| greater than                           | `{"path":"attributes.hp.value","gt":0}`                                                                |
+| greater or equal                       | `{"path":"abilities.str.value","gte":13}`                                                              |
+| less than                              | `{"path":"attributes.hp.value","lt":10}`                                                               |
+| less or equal                          | `{"path":"attributes.exhaustion","lte":2}`                                                             |
+| actor value is one of these values     | `{"path":"details.type.value","in":["humanoid","fiend"]}`                                              |
+| actor array or Set contains this value | `{"path":"traits.languages.value","includes":"elvish"}`                                                |
+| all pass                               | `{"all":[{"path":"attributes.hp.pct","gt":50},{"path":"attributes.ac.equippedArmor","exists":false}]}` |
+| any passes                             | `{"any":[{"path":"traits.di.value","includes":"fire"},{"path":"traits.dr.value","includes":"fire"}]}`  |
+| not                                    | `{"not":{"path":"attributes.ac.equippedArmor"}}`                                                       |
 
 ## Values
 
 `value` can be a literal or a small numeric expression.
 
-| Value | Example |
-| --- | --- |
-| literal number | `2` |
-| literal string | `"elvish"` |
-| actor path | `{"path":"abilities.dex.mod"}` |
-| add | `{"add":[1,{"path":"abilities.dex.mod"}]}` |
-| subtract | `{"sub":[{"path":"attributes.hp.max"},{"path":"attributes.hp.value"}]}` |
-| multiply | `{"mul":[2,{"path":"prof"}]}` |
-| divide | `{"div":[{"path":"attributes.hp.max"},2]}` |
-| floor | `{"floor":{"div":[{"path":"attributes.hp.max"},2]}}` |
-| ceil | `{"ceil":{"div":[{"path":"attributes.hp.max"},2]}}` |
-| round | `{"round":{"div":[{"path":"attributes.hp.max"},2]}}` |
-| absolute | `{"abs":-2}` |
-| minimum | `{"min":[1,2,3]}` |
-| maximum | `{"max":[1,2,3]}` |
+| Value          | Example                                                                 |
+| -------------- | ----------------------------------------------------------------------- |
+| literal number | `2`                                                                     |
+| literal string | `"elvish"`                                                              |
+| actor path     | `{"path":"abilities.dex.mod"}`                                          |
+| add            | `{"add":[1,{"path":"abilities.dex.mod"}]}`                              |
+| subtract       | `{"sub":[{"path":"attributes.hp.max"},{"path":"attributes.hp.value"}]}` |
+| multiply       | `{"mul":[2,{"path":"prof"}]}`                                           |
+| divide         | `{"div":[{"path":"attributes.hp.max"},2]}`                              |
+| floor          | `{"floor":{"div":[{"path":"attributes.hp.max"},2]}}`                    |
+| ceil           | `{"ceil":{"div":[{"path":"attributes.hp.max"},2]}}`                     |
+| round          | `{"round":{"div":[{"path":"attributes.hp.max"},2]}}`                    |
+| absolute       | `{"abs":-2}`                                                            |
+| minimum        | `{"min":[1,2,3]}`                                                       |
+| maximum        | `{"max":[1,2,3]}`                                                       |
 
 Formula-style strings can also use roll-data references directly:
 
-| Value | Example |
-| --- | --- |
-| actor formula | `"10 + @abilities.dex.mod + @abilities.wis.mod"` |
-| runtime scaling formula | `"@scaling * @gridDistance"` |
+| Value                   | Example                                          |
+| ----------------------- | ------------------------------------------------ |
+| actor formula           | `"10 + @abilities.dex.mod + @abilities.wis.mod"` |
+| runtime scaling formula | `"@scaling * @gridDistance"`                     |
 
 Use the `@` prefix for roll-data references in formula-style strings.
