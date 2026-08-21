@@ -1,0 +1,12 @@
+{
+	"private": true,
+	"scripts": {
+		"package:release": "npm run pack:packs && powershell -NoProfile -ExecutionPolicy Bypass -File scripts/package-release.ps1",
+		"pack:packs": "npm run pack:example-effects && npm run pack:readme",
+		"pack:example-effects": "npx fvtt package pack --id rave5e --type Module --compendiumName rave5e-example-effects --compendiumType ActiveEffect --inputDirectory packs-src/rave5e-example-effects --outputDirectory packs",
+		"pack:readme": "npx fvtt package pack --id rave5e --type Module --compendiumName rave5e-readme --compendiumType JournalEntry --inputDirectory packs-src/rave5e-readme --outputDirectory packs",
+		"unpack:packs": "npm run unpack:example-effects && npm run unpack:readme",
+		"unpack:example-effects": "npx fvtt package unpack --id rave5e --type Module --compendiumName rave5e-example-effects --compendiumType ActiveEffect --inputDirectory packs --outputDirectory packs-src/rave5e-example-effects --clean",
+		"unpack:readme": "npx fvtt package unpack --id rave5e --type Module --compendiumName rave5e-readme --compendiumType JournalEntry --inputDirectory packs --outputDirectory packs-src/rave5e-readme --clean"
+	}
+}

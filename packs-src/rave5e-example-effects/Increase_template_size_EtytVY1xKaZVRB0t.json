@@ -1,0 +1,93 @@
+{
+  "name": "Increase template size",
+  "_id": "rv5etemplatesize",
+  "img": "icons/magic/symbols/runes-star-pentagon-blue.webp",
+  "type": "base",
+  "system": {
+    "changes": [
+      {
+        "key": "flags.rave5e.changes.0",
+        "type": "custom",
+        "value": {
+          "op": "override",
+          "value": "@scaling * @gridDistance",
+          "when": {
+            "all": [
+              {
+                "path": "activity.target.template.type",
+                "eq": "sphere"
+              },
+              {
+                "path": "scaling.increase",
+                "gte": 0
+              }
+            ]
+          },
+          "runtimeOnly": true
+        },
+        "phase": "initial",
+        "priority": null
+      }
+    ]
+  },
+  "disabled": false,
+  "start": null,
+  "duration": {
+    "value": null,
+    "units": "seconds",
+    "expiry": null,
+    "expired": false
+  },
+  "description": "<p>For an item that places a Sphere template and consumes uses with scaling enabled, these Rave 5e changes increase the template size during use.</p><p>Enable Runtime when the change needs activity-use values such as `@scaling` or `@scaling.increase`.</p><p>`@gridDistance` returns the grid distance of the active scene, allowing formulas such as `@scaling * @gridDistance`.</p><p>To match only sphere templates:<br>{\"path\":\"activity.target.template.type\",\"eq\":\"sphere\"}</p>",
+  "origin": null,
+  "tint": "#ffffff",
+  "transfer": false,
+  "statuses": [],
+  "showIcon": 1,
+  "folder": null,
+  "flags": {
+    "rave5e": {
+      "changeRows": {
+        "0": "activities[save].target.template.size",
+        "1": "activities[save].target.template.size",
+        "2": "activities[save].target.template.size"
+      }
+    },
+    "automated-conditions-5e": {
+      "ac5eChangeRows": {
+        "0": "flags.automated-conditions-5e.damage.diceUpgrade",
+        "2": "flags.automated-conditions-5e.use.templateSize",
+        "3": "flags.ac5e.attack.advantage"
+      }
+    },
+    "dnd5e": {
+      "riders": {
+        "statuses": []
+      }
+    },
+    "core": {
+      "sheetClass": "core.DAEActiveEffectConfig",
+      "overlay": false
+    },
+    "dae": {
+      "enableCondition": "",
+      "disableCondition": "",
+      "expiryMode": "default",
+      "macroRepeat": "none",
+      "specialDuration": []
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.364",
+    "systemId": "dnd5e",
+    "systemVersion": "5.3.3",
+    "createdTime": 1782657470587,
+    "modifiedTime": 1782657930609,
+    "lastModifiedBy": "AD1ZyqfRzMiTZMrk",
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "sort": 200000,
+  "_key": "!effects!EtytVY1xKaZVRB0t"
+}

@@ -1,0 +1,73 @@
+<div class="rave5e-conditional-editor-form">
+  <div class="rave5e-conditional-editor-body">
+    <fieldset class="rave5e-conditional-editor-fieldset rave5e-conditional-editor-primary-fieldset">
+      <legend>{{effectName}}{{#if changeLabel}} ({{changeLabel}}){{/if}}</legend>
+      <header class="rave5e-conditional-editor-header rave5e-conditional-editor-inline-meta">
+        <p>
+          <strong>{{localize "RAVE5E.Editor.AttributeKey"}}:</strong>
+          <i class="fa-solid fa-circle-question rave5e-conditional-editor-help" data-tooltip="{{attributeKeyHint}}" data-tooltip-direction="RIGHT" data-tooltip-class="rave5e-attribute-key-tooltip" data-locked></i>
+          <span class="rave5e-editor-key">{{key}}</span>
+        </p>
+      </header>
+      <section class="rave5e-condition-grid rave5e-condition-grid-operation">
+        <div class="form-group">
+          <label>{{localize "RAVE5E.Editor.Operation.Label"}} {{{operationHint}}}</label>
+          <div class="form-fields">
+            <select name="op">
+              {{#each operationOptions}}
+                <option value="{{value}}" title="{{localize hint}}"{{#if selected}} selected{{/if}}>{{localize label}}</option>
+              {{/each}}
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>{{localize "RAVE5E.Editor.Value.Label"}} {{{valueHint}}}</label>
+          <div class="form-fields rave5e-inline-field">
+            <input type="text" name="value" value="{{value}}">
+            {{{valueExpandButton}}}
+          </div>
+        </div>
+        <label class="rave5e-conditional-editor-toggle rave5e-runtime-toggle" data-tooltip="{{localize "RAVE5E.Editor.Runtime.Hint"}}">
+          <input type="checkbox" name="runtimeOnly"{{#if runtimeOnly}} checked{{/if}}> {{localize "RAVE5E.Editor.Runtime.Label"}} {{{runtimeHint}}}
+        </label>
+      </section>
+    </fieldset>
+    <fieldset class="rave5e-conditional-editor-fieldset rave5e-conditional-editor-when-fieldset">
+      <legend>{{localize "RAVE5E.Editor.When.Label"}}</legend>
+      <div class="form-group">
+        <label>{{localize "RAVE5E.Editor.Match.Label"}} {{{matchHint}}}</label>
+        <div class="form-fields">
+          <select name="group">
+            <option value="single"{{#if groupSingle}} selected{{/if}}>{{localize "RAVE5E.Editor.Match.Single"}}</option>
+            <option value="all"{{#if groupAll}} selected{{/if}}>{{localize "RAVE5E.Editor.Match.All"}}</option>
+            <option value="any"{{#if groupAny}} selected{{/if}}>{{localize "RAVE5E.Editor.Match.Any"}}</option>
+          </select>
+        </div>
+      </div>
+      <div class="rave5e-condition-list">
+        {{{conditionRows}}}
+      </div>
+    </fieldset>
+    <fieldset class="rave5e-conditional-editor-fieldset rave5e-conditional-editor-utility-fieldset">
+      <details class="rave5e-generated-json"{{#if generatedJsonExpanded}} open{{/if}}>
+        <summary>
+          <span>{{localize "RAVE5E.Editor.GeneratedJSON.Label"}}</span>
+          {{{generatedJsonHint}}}
+          <i class="fa-solid fa-triangle-exclamation rave5e-editor-warning" aria-label="{{localize "RAVE5E.Editor.GeneratedJSON.Warning"}}" hidden></i>
+          <dialog class="warnings rave5e-editor-warning-tooltip"></dialog>
+        </summary>
+        <div class="form-group stacked">
+          <div class="form-fields">
+            <textarea name="advanced" rows="6" data-original="{{advanced}}">{{advanced}}</textarea>
+          </div>
+        </div>
+      </details>
+      <footer class="rave5e-conditional-editor-footer">
+        <button type="button" data-action="apply"><i class="fa-solid fa-check"></i> {{localize "RAVE5E.Editor.Actions.Apply"}}</button>
+        <button type="button" data-action="applyClose"><i class="fa-solid fa-floppy-disk"></i> {{localize "RAVE5E.Editor.Actions.ApplyClose"}}</button>
+        <button type="button" data-action="reset"><i class="fa-solid fa-rotate-left"></i> {{localize "RAVE5E.Editor.Actions.Reset"}}</button>
+        <button type="button" data-action="cancel"><i class="fa-solid fa-xmark"></i> {{localize "RAVE5E.Editor.Actions.Cancel"}}</button>
+      </footer>
+    </fieldset>
+  </div>
+</div>

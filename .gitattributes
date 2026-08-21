@@ -1,0 +1,4 @@
+packs/**/*.ldb binary
+packs/**/*.log binary
+packs/**/MANIFEST-* binary
+packs/**/CURRENT binary

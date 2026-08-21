@@ -1,0 +1,479 @@
+.active-effect-config .rave5e-effect-value-editor-control {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+  min-width: 0;
+  width: 100%;
+}
+
+.active-effect-config .rave5e-effect-value-editor-control input,
+.active-effect-config .rave5e-effect-value-editor-control textarea {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.active-effect-config .rave5e-effect-value-editor-button {
+  border-color: var(--color-level-info);
+  color: var(--color-level-info);
+  flex: 0 0 28px;
+  height: 28px;
+  margin: 0;
+  padding: 0;
+  width: 28px;
+}
+
+#autocomplete.rave5e-autocomplete-menu {
+  max-height: min(20rem, calc(100vh - 4rem));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+#autocomplete.rave5e-autocomplete-menu li {
+  align-items: baseline;
+  display: flex;
+  gap: 0.5rem;
+}
+
+#autocomplete.rave5e-autocomplete-menu .rave5e-autocomplete-path {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#autocomplete.rave5e-autocomplete-menu .rave5e-autocomplete-detail {
+  color: var(--color-text-subtle, var(--color-text-light-6));
+  flex: 0 0 auto;
+  font-size: var(--font-size-12);
+}
+
+.application.rave5e-conditional-editor {
+  max-height: calc(100vh - 2rem);
+  max-width: min(1200px, calc(100vw - 2rem));
+  min-width: min(680px, calc(100vw - 2rem));
+  overflow: hidden;
+  resize: horizontal;
+}
+
+.rave5e-conditional-editor .window-content {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: min(680px, calc(100vw - 2rem));
+  overflow: hidden;
+}
+
+.rave5e-conditional-editor-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  max-height: calc(100vh - 5rem);
+  min-height: 0;
+}
+
+.rave5e-conditional-editor-body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+  overflow: hidden;
+  padding-right: 2px;
+}
+
+.rave5e-conditional-editor-footer {
+  flex: 0 0 auto;
+}
+
+.rave5e-conditional-editor-fieldset {
+  margin: 10px 0 0;
+  min-width: 0;
+}
+
+.rave5e-conditional-editor-primary-fieldset {
+  flex: 0 0 auto;
+  margin-top: 6px;
+}
+
+.rave5e-conditional-editor-when-fieldset {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.rave5e-conditional-editor-utility-fieldset {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.rave5e-conditional-editor-form fieldset {
+  border-radius: 6px;
+}
+
+.rave5e-condition-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 23rem;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.rave5e-condition-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+}
+
+.rave5e-condition-grid {
+  display: grid;
+  gap: 14px 16px;
+  margin-top: 10px;
+}
+
+.rave5e-condition-grid-even {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.rave5e-condition-grid-operation {
+  align-items: end;
+  grid-template-columns: 9rem minmax(0, 1fr) max-content;
+}
+
+.rave5e-condition-grid-condition {
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+}
+
+.rave5e-conditional-editor-form .form-group {
+  margin: 0;
+}
+
+.rave5e-conditional-editor-form .form-group > label {
+  display: inline-block;
+  margin-bottom: 6px;
+}
+
+.rave5e-conditional-editor-header p {
+  margin: 0 0 6px;
+}
+
+.rave5e-conditional-editor-help {
+  margin-left: 4px;
+}
+
+#tooltip.rave5e-attribute-key-tooltip {
+  text-align: center;
+  white-space: nowrap;
+}
+
+.rave5e-inline-field {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+  min-width: 0;
+}
+
+.rave5e-inline-field input,
+.rave5e-inline-field textarea {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.rave5e-field-expand {
+  flex: 0 0 28px;
+  height: 28px;
+  margin: 0;
+  padding: 0;
+  width: 28px;
+}
+
+.rave5e-condition-toggle-row {
+  align-items: flex-end;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  min-height: 57px;
+  padding-bottom: 1px;
+}
+
+.rave5e-runtime-toggle {
+  align-self: end;
+}
+
+.rave5e-conditional-editor-form legend {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+}
+
+.rave5e-conditional-editor-form legend .control-button {
+  background: none;
+  border: 0;
+  box-shadow: none;
+  color: inherit;
+  flex: 0 0 auto;
+  height: auto;
+  line-height: 1;
+  margin: 0;
+  min-height: 0;
+  padding: 0;
+  width: auto;
+}
+
+.rave5e-conditional-editor-form legend .control-button:hover,
+.rave5e-conditional-editor-form legend .control-button:focus {
+  background: none;
+  box-shadow: none;
+}
+
+.rave5e-conditional-editor-form textarea {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.rave5e-editor-key {
+  color: var(--color-text-light-6);
+  display: inline-block;
+  font-family: var(--font-monospace);
+  margin-left: 6px;
+  overflow-wrap: anywhere;
+}
+
+.rave5e-conditional-editor-toggle {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+  min-height: 28px;
+}
+
+.rave5e-editor-info {
+  font-size: var(--font-size-12);
+  margin-left: 4px;
+  opacity: 0.9;
+}
+
+.rave5e-editor-warning {
+  color: var(--color-level-warning);
+  font-size: var(--font-size-12);
+  margin-left: 4px;
+}
+
+.rave5e-generated-json {
+  margin-top: 2px;
+}
+
+.rave5e-generated-json summary {
+  align-items: center;
+  cursor: pointer;
+  display: inline-flex;
+  font-weight: 700;
+  gap: 4px;
+  list-style: none;
+  position: relative;
+}
+
+.rave5e-generated-json summary::-webkit-details-marker {
+  display: none;
+}
+
+.rave5e-generated-json summary::after {
+  content: "\f0da";
+  font-family: var(--font-awesome);
+  font-weight: bold;
+  margin-left: 2px;
+}
+
+.rave5e-generated-json[open] summary::after {
+  content: "\f0d7";
+}
+
+.rave5e-generated-json .form-group {
+  margin-top: 6px;
+}
+
+.rave5e-generated-json textarea {
+  max-height: 10rem;
+}
+
+.rave5e-editor-warning-tooltip {
+  background: var(--dnd5e-background-card);
+  border: 1px solid var(--dnd5e-color-gold);
+  border-radius: 4px;
+  box-shadow: 0 0 10px var(--color-shadow-dark);
+  color: var(--color-text-primary);
+  display: none;
+  font-family: var(--dnd5e-font-roboto-condensed);
+  margin: 0;
+  max-height: unset;
+  max-width: unset;
+  outline: none;
+  padding: 4px 8px;
+  position: absolute;
+  width: 300px;
+  z-index: 1000;
+}
+
+.rave5e-editor-warning:hover + .rave5e-editor-warning-tooltip {
+  display: block;
+}
+
+.rave5e-editor-warning-tooltip ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.rave5e-editor-warning-tooltip li {
+  border-bottom: var(--dnd5e-border-separator-warning);
+  padding: 6px 8px;
+}
+
+.rave5e-editor-warning-tooltip li:last-child {
+  border: none;
+}
+
+.rave5e-editor-warning-tooltip li.warning::before {
+  color: var(--color-text-secondary);
+  content: "\f071";
+  font-family: var(--font-awesome);
+  font-weight: bold;
+  margin-right: 2px;
+}
+
+.rave5e-conditional-editor-footer {
+  align-items: center;
+  background: var(--color-background);
+  border-top: 1px solid var(--color-border-light-primary);
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: row;
+  gap: 8px;
+  justify-content: flex-end;
+  margin: 0;
+  padding-top: 8px;
+}
+
+.rave5e-conditional-editor-footer button {
+  flex: 0 0 auto;
+  width: auto;
+}
+
+@media (max-width: 720px) {
+  .rave5e-condition-grid-even,
+  .rave5e-condition-grid-condition {
+    grid-template-columns: 1fr;
+  }
+
+  .rave5e-conditional-editor-footer {
+    justify-content: stretch;
+  }
+
+  .rave5e-conditional-editor-footer button {
+    flex: 1 1 0;
+  }
+}
+
+.rave5e-string-editor textarea {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.rave5e-readme-journal {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.rave5e-readme-journal table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.rave5e-readme-journal table th:first-child,
+.rave5e-readme-journal table td:first-child {
+  width: 24%;
+}
+
+.rave5e-readme-journal table th:nth-child(2),
+.rave5e-readme-journal table td:nth-child(2) {
+  width: 10%;
+}
+
+.rave5e-readme-journal table th:nth-child(3),
+.rave5e-readme-journal table td:nth-child(3) {
+  width: 66%;
+}
+
+.rave5e-readme-journal table th:nth-last-child(2):first-child,
+.rave5e-readme-journal table td:nth-last-child(2):first-child {
+  width: 28%;
+}
+
+.rave5e-readme-journal table th:last-child:nth-child(2),
+.rave5e-readme-journal table td:last-child:nth-child(2) {
+  width: 72%;
+}
+
+.rave5e-readme-journal td,
+.rave5e-readme-journal th {
+  text-align: left;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.rave5e-readme-journal code {
+  overflow-wrap: anywhere;
+  white-space: break-spaces;
+}
+
+.rave5e-readme-journal pre {
+  overflow-x: auto;
+  white-space: pre-wrap;
+}
+
+.rave5e-links-menu-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rave5e-links-group {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.rave5e-links-menu-label {
+  color: var(--color-text-dark-secondary);
+  font-weight: 700;
+}
+
+.rave5e-links-row {
+  display: flex;
+  gap: 8px;
+}
+
+.rave5e-links-row-combined {
+  align-items: stretch;
+}
+
+.rave5e-links-menu-button {
+  align-items: center;
+  display: flex;
+  flex: 1 1 0;
+  gap: 6px;
+  justify-content: center;
+  min-width: 0;
+}
+
+.rave5e-links-menu-button span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
