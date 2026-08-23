@@ -221,12 +221,29 @@ function patchDnd5eItemPrepareFinalAttributes() {
 
 function applyConditionallyAppliedEnchantments(item, options) {
 	const overrides = {};
+	const changedActivities = new Set();
 	for (const change of getConditionallyAppliedEnchantments(item, options)) {
 		if (change._rave5eSkipApply) continue;
 		const applied = change.effect.constructor.applyChange(item, change, { replacementData: buildContext(item.actor, { effect: change.effect, item, activity: options?.activity }), modifyTarget: true });
 		Object.assign(overrides, applied);
+		const activityId = change.key.match(/^system\.activities\.([^.]+)\./)?.[1];
+		if (activityId) changedActivities.add(item.system.activities?.get(activityId));
 	}
 	foundry.utils.mergeObject(item.overrides, foundry.utils.expandObject(overrides));
+	for (const activity of changedActivities) refreshActivityLabels(activity);
+}
+
+function refreshActivityLabels(activity) {
+	if (!activity?.prepareFinalData) return;
+	const parts = activity.damage?.parts;
+	const baseParts = Array.isArray(parts) ? parts.filter((part) => part.base) : [];
+	if (baseParts.length) parts.splice(0, parts.length, ...parts.filter((part) => !part.base));
+	const rollData = activity.getRollData({ deterministic: true });
+	activity.prepareFinalData(rollData);
+	if (!baseParts.length) return;
+	const preparedParts = activity.damage?.parts;
+	preparedParts.splice(0, preparedParts.length, ...baseParts, ...preparedParts.filter((part) => !part.base));
+	activity.prepareDamageLabel?.(rollData);
 }
 
 function patchDnd5eActivityUsageScaling() {
@@ -354,18 +371,33 @@ function* getConditionallyAppliedEnchantments(item, { runtimeOnly = false, activ
 			const spec = parseSpec(preparedChange);
 			if (!spec) continue;
 			if (Boolean(spec.runtimeOnly) !== runtimeOnly) continue;
-			const rollData = buildContext(actor, { effect, item, activity });
-			if (spec.when && !evaluateCondition(spec.when, rollData)) continue;
-			let value = evaluateValue(spec.value, rollData);
-			if (value === undefined) continue;
-			if (preparedChange.key === 'system.damage.types') {
-				yield* getDamageTypeEnchantmentChanges(item, preparedChange, spec.op, value);
-				continue;
+			for (const [targetChange, targetActivity] of getEnchantmentChangeTargets(item, preparedChange, activity)) {
+				const rollData = buildContext(actor, { effect, item, activity: targetActivity });
+				if (spec.when && !evaluateCondition(spec.when, rollData)) continue;
+				let value = evaluateValue(spec.value, rollData);
+				if (value === undefined) continue;
+				if (targetChange.key === 'system.damage.types') {
+					yield* getDamageTypeEnchantmentChanges(item, targetChange, spec.op, value);
+					continue;
+				}
+				const normalized = normalizeConditionallyAppliedEnchantmentChange(targetChange.key, spec.op, value, targetActivity);
+				yield { ...targetChange, count: 1, type: normalized.op, value: normalized.value };
 			}
-			const normalized = normalizeConditionallyAppliedEnchantmentChange(preparedChange.key, spec.op, value, activity);
-			yield { ...preparedChange, count: 1, type: normalized.op, value: normalized.value };
 		}
 	}
+}
+
+function getEnchantmentChangeTargets(item, change, activity) {
+	const match = change.key.match(/^activities\[([^\]]+)]\.(.+)$/);
+	if (match) {
+		const activities = activity ? (activity.type === match[1] ? [activity] : []) : (item.system.activities?.getByType(match[1]) ?? []);
+		return activities.map((entry) => [{ ...change, key: `system.activities.${entry.id}.${match[2]}` }, entry]);
+	}
+	if (change.key.startsWith('system.activities.')) {
+		const id = change.key.split('.')[2];
+		return [[change, item.system.activities?.get(id) ?? activity]];
+	}
+	return [[change, activity]];
 }
 
 function* getDamageTypeEnchantmentChanges(item, change, op, value) {
@@ -418,7 +450,7 @@ function isActivityFormulaAddKey(key) {
 }
 
 function normalizeConditionallyAppliedEnchantmentValue(key, op, value) {
-	if (!/^activities\[[^\]]+]\.damage\.parts$/.test(key)) return value;
+	if (!/^(?:activities\[[^\]]+]|system\.activities\.[^.]+)\.damage\.parts$/.test(key)) return value;
 	if (op === 'add' && Array.isArray(value) && typeof value[0] === 'string') return damagePartValue(value);
 	if (op === 'override' && Array.isArray(value)) return value.map((part) => (Array.isArray(part) ? damagePartValue(part) : part));
 	return value;
