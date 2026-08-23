@@ -1,3 +1,7 @@
+## v14.533.5
+* Added per-activity condition evaluation for `activities[<type>]` enchantment changes, making `activity.*` paths available during normal item preparation.
+* Refreshed attack, damage, and save labels after conditional activity changes while preserving enchanted base-damage parts.
+
 ## v14.533.4
 * Fixed persisted Rave changes not invoking the registered change handler during actor preparation.
 * Fixed unarmored conditions by resolving equipped armor and shields before dnd5e prepares Armor Class.
