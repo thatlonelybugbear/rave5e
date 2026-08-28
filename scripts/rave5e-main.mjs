@@ -1098,14 +1098,14 @@ class ConditionalEditorApp extends HandlebarsApplicationMixin(ApplicationV2) {
 		event.preventDefault();
 		const form = target.closest('form');
 		const wasNested = isNestedConditionalEditor(form);
-		const result = this.#save(form);
+		const result = this._save(form);
 		if (!result) return;
 		if (wasNested !== hasNestedConditionGroup(result.when)) await this.render({ force: true });
 	}
 
 	static #applyClose(event, target) {
 		event.preventDefault();
-		const result = this.#save(target.closest('form'));
+		const result = this._save(target.closest('form'));
 		if (result) this.close();
 	}
 
@@ -1119,7 +1119,7 @@ class ConditionalEditorApp extends HandlebarsApplicationMixin(ApplicationV2) {
 		}
 	}
 
-	#save(form) {
+	_save(form) {
 		const result = collectEditorDraft(form);
 		if (!isObject(result)) return;
 		this.savedValue = JSON.stringify(result);
