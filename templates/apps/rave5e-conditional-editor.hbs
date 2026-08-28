@@ -32,6 +32,9 @@
         </label>
       </section>
     </fieldset>
+    {{#if nestedConditional}}
+    <input type="hidden" name="nestedConditional" value="true">
+    {{else}}
     <fieldset class="rave5e-conditional-editor-fieldset rave5e-conditional-editor-when-fieldset">
       <legend>{{localize "RAVE5E.Editor.When.Label"}}</legend>
       <div class="form-group">
@@ -48,14 +51,16 @@
         {{{conditionRows}}}
       </div>
     </fieldset>
+    {{/if}}
     <fieldset class="rave5e-conditional-editor-fieldset rave5e-conditional-editor-utility-fieldset">
-      <details class="rave5e-generated-json"{{#if generatedJsonExpanded}} open{{/if}}>
+      <details class="rave5e-generated-json"{{#if nestedConditional}} open{{else}}{{#if generatedJsonExpanded}} open{{/if}}{{/if}}>
         <summary>
           <span>{{localize "RAVE5E.Editor.GeneratedJSON.Label"}}</span>
           {{{generatedJsonHint}}}
           <i class="fa-solid fa-triangle-exclamation rave5e-editor-warning" aria-label="{{localize "RAVE5E.Editor.GeneratedJSON.Warning"}}" hidden></i>
           <dialog class="warnings rave5e-editor-warning-tooltip"></dialog>
         </summary>
+        {{#if nestedConditional}}<p>{{localize "RAVE5E.Editor.NestedConditional.JSONHint"}}</p>{{/if}}
         <div class="form-group stacked">
           <div class="form-fields">
             <textarea name="advanced" rows="6" data-original="{{advanced}}">{{advanced}}</textarea>

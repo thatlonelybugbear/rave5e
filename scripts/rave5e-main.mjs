@@ -501,6 +501,89 @@ Hooks.on('renderActiveEffectConfig', (app, html) => {
 
 Hooks.on('preCreateActiveEffect', (effect, data) => normalizeRaveActiveEffectChangeTypes(effect, data, { updateSource: true }));
 Hooks.on('preUpdateActiveEffect', (effect, changes) => normalizeRaveActiveEffectChangeTypes(effect, changes));
+Hooks.on('dnd5e.preRollSavingThrow', (config, _dialog, message) => {
+	console.log('[Rave5e] save roll hook', JSON.stringify({ ability: config?.ability, configRollCount: config?.rolls?.length, hasMessageConfig: !!message }));
+	applyConditionalSaveResistance(config, message);
+});
+
+function applyConditionalSaveResistance(config, messageConfig) {
+	const actor = config?.subject;
+	const ability = config?.ability;
+	const message = getOriginatingUsageMessage(config, messageConfig);
+	console.log('[Rave5e] save origin', JSON.stringify({ ability, actor: actor?.name, found: !!message }));
+	if (!actor || !ability || !message) return;
+	const item = message.getAssociatedItem?.();
+	const activity = message.getAssociatedActivity?.();
+	const effects = (message.system?.effects ?? [])
+		.map((uuid) => (uuid.length === 16 ? item?.effects.get(uuid) : fromUuidSync(uuid, { relative: item, strict: false })))
+		.filter(Boolean);
+	if (!effects.length) effects.push(...(activity?.applicableEffects ?? []));
+	const riderStatuses = {};
+	for (const effect of effects) {
+		for (const status of effect.statuses ?? []) riderStatuses[status] = true;
+		for (const status of effect.flags?.dnd5e?.riders?.statuses ?? []) riderStatuses[status] = true;
+	}
+	console.log('[Rave5e] rider statuses', JSON.stringify({ effects: effects.map((effect) => ({ name: effect.name, id: effect.id })), riderStatuses }));
+
+	const target = `system.abilities.${ability}.save.roll.mode`;
+	const rollOptions = config.rolls?.[0]?.options;
+	console.log('[Rave5e] save roll options', JSON.stringify({ fromConfig: !!rollOptions, options: { advantage: rollOptions?.advantage, disadvantage: rollOptions?.disadvantage, mode: rollOptions?.mode } }));
+	if (!rollOptions) return;
+	const counts = {
+		advantages: Number(rollOptions.advantage),
+		disadvantages: Number(rollOptions.disadvantage),
+		suppressAdvantages: false,
+		suppressDisadvantages: false,
+		override: null,
+	};
+	for (const effect of getActorOwnedEffects(actor)) {
+		if (effect.disabled || effect.isSuppressed) continue;
+		for (const change of effect.changes) {
+			const preparedChange = resolveRaveChange(change, effect);
+			if (preparedChange.key !== target || !isRaveChange(preparedChange)) continue;
+			const spec = parseSpec(preparedChange);
+			if (!spec?.runtimeOnly) continue;
+			const rollData = buildContext(actor, { effect, item, activity });
+			foundry.utils.setProperty(rollData, 'riderStatuses', riderStatuses);
+			if (spec.when && !evaluateCondition(spec.when, rollData)) continue;
+			applyConditionalAdvantageMode(counts, spec.op, Number(evaluateValue(spec.value, rollData)));
+		}
+	}
+	if (counts.override !== null) {
+		rollOptions.advantage = counts.override === 1;
+		rollOptions.disadvantage = counts.override === -1;
+	} else {
+		rollOptions.advantage = !counts.suppressAdvantages && counts.advantages > 0;
+		rollOptions.disadvantage = !counts.suppressDisadvantages && counts.disadvantages > 0;
+	}
+	config.advantage = rollOptions.advantage;
+	config.disadvantage = rollOptions.disadvantage;
+	config.advantageMode = rollOptions.advantage && !rollOptions.disadvantage ? 1 : !rollOptions.advantage && rollOptions.disadvantage ? -1 : 0;
+	rollOptions.advantageMode = config.advantageMode;
+	console.log('[Rave5e] save roll options updated', JSON.stringify({ options: { advantage: rollOptions.advantage, disadvantage: rollOptions.disadvantage, advantageMode: rollOptions.advantageMode }, counts }));
+}
+
+function getOriginatingUsageMessage(config, messageConfig) {
+	const targets = [config?.event?.currentTarget, config?.event?.target].filter(Boolean);
+	const messageId = messageConfig?.data?.flags?.dnd5e?.originatingMessage ?? targets.map((target) => target?.dataset?.messageId ?? target?.closest?.('[data-message-id]')?.dataset?.messageId).find(Boolean);
+	console.log('[Rave5e] originating message lookup', JSON.stringify({ messageId, targetCount: targets.length }));
+	return messageId ? game.messages.get(messageId) : null;
+}
+
+function applyConditionalAdvantageMode(counts, op, value) {
+	if (![1, 0, -1].includes(value)) return;
+	if (op === 'add') {
+		if (value === 1) counts.advantages++;
+		else if (value === -1) counts.disadvantages++;
+	} else if (op === 'override') counts.override = value;
+	else if (op === 'upgrade') {
+		counts.suppressDisadvantages = true;
+		if (value === 1) counts.advantages++;
+	} else if (op === 'downgrade') {
+		counts.suppressAdvantages = true;
+		if (value === -1) counts.disadvantages++;
+	}
+}
 
 function isActivityBonusKey(key) {
 	return /^system\.bonuses\.[^.]+\.(attack|damage)$/.test(key);
@@ -565,9 +648,7 @@ function getActivityBonus(activity, actionType, bonusType) {
 			if (!spec || spec.op !== 'add') continue;
 			if (spec.runtimeOnly) continue;
 			if (!specUsesRuntimeRollContext(spec)) continue;
-			rollData ??= activity.getRollData?.() ?? actor.getRollData();
-			defineLazyActorRollDataViews(rollData, actor);
-			addActorEffectsContext(rollData, actor);
+			rollData ??= buildContext(actor, { effect, item: activity.item, activity });
 			if (spec.when && !evaluateCondition(spec.when, rollData)) continue;
 			const value = evaluateValue(spec.value, rollData);
 			if (value && typeof value === 'object') continue;
@@ -627,7 +708,8 @@ function isRaveStorageKey(key) {
 
 function resolveRaveChange(change, effect = change?.effect) {
 	const index = getRaveStorageKeyIndex(change?.key) ?? getEffectChangeIndex(effect, change);
-	const key = index === null ? change?.key : (getRaveChangeRows(effect)[index] ?? change?.key);
+	const storedKey = index === null ? undefined : getRaveChangeRows(effect)[index];
+	const key = index === null ? change?.key : (typeof storedKey === 'string' ? storedKey : storedKey?.key ?? change?.key);
 	return { ...change, effect, key };
 }
 
@@ -1012,10 +1094,13 @@ class ConditionalEditorApp extends HandlebarsApplicationMixin(ApplicationV2) {
 		});
 	}
 
-	static #apply(event, target) {
+	static async #apply(event, target) {
 		event.preventDefault();
-		const result = this.#save(target.closest('form'));
+		const form = target.closest('form');
+		const wasNested = isNestedConditionalEditor(form);
+		const result = this.#save(form);
 		if (!result) return;
+		if (wasNested !== hasNestedConditionGroup(result.when)) await this.render({ force: true });
 	}
 
 	static #applyClose(event, target) {
@@ -1071,8 +1156,16 @@ function parseEditorDraft(value) {
 		runtimeOnly: !!spec.runtimeOnly,
 		group: getConditionGroup(spec.when),
 		conditions: getConditionRows(spec.when),
+		nestedConditional: hasNestedConditionGroup(spec.when),
 		advanced: JSON.stringify(spec),
 	};
+}
+
+function hasNestedConditionGroup(condition, nested = false) {
+	if (!isObject(condition)) return false;
+	const children = Array.isArray(condition.all) ? condition.all : Array.isArray(condition.any) ? condition.any : null;
+	if (children) return nested || children.some((child) => hasNestedConditionGroup(child, true));
+	return isObject(condition.not) && hasNestedConditionGroup(condition.not, true);
 }
 
 // TODO: Revisit rendering condition rows as a Handlebars template part.
@@ -1169,6 +1262,12 @@ async function openRaveReadme() {
 function collectEditorDraft(form) {
 	const advancedInput = form.elements.advanced;
 	const advanced = advancedInput.value.trim();
+	if (advanced && isNestedConditionalEditor(form)) {
+		try {
+			const parsed = JSON.parse(advanced);
+			if (isObject(parsed)) return parsed;
+		} catch (_err) {}
+	}
 	if (advanced && advanced !== advancedInput.dataset.original) {
 		try {
 			const parsed = JSON.parse(advanced);
@@ -1188,7 +1287,7 @@ function collectEditorFields(form) {
 		else if (operator !== 'truthy') condition[operator] = parseEditorValue(row.querySelector(`[name="condition-compare"]`)?.value);
 		return row.querySelector(`[name="condition-negate"]`)?.checked ? { not: condition } : condition;
 	});
-	const group = form.elements.group.value;
+	const group = form.elements.group?.value ?? 'single';
 	const when =
 		group === 'all' ? { all: conditions }
 		: group === 'any' ? { any: conditions }
@@ -1286,7 +1385,7 @@ function initializeEditorJsonSync(root) {
 	form.addEventListener('change', sync);
 	form.addEventListener('focusout', sync);
 	updateConditionCompareVisibility(form);
-	syncEditorAdvancedJson(root);
+	if (!isNestedConditionalEditor(form)) syncEditorAdvancedJson(root);
 	validateAdvancedJson(root);
 }
 
@@ -1332,10 +1431,26 @@ function syncEditorAdvancedJson(root) {
 	const form = getEditorForm(root);
 	const advanced = form?.elements?.advanced;
 	if (!form || !advanced) return;
+	if (isNestedConditionalEditor(form)) {
+		try {
+			const value = JSON.parse(advanced.value);
+			value.op = form.elements.op.value;
+			value.value = parseEditorValue(form.elements.value.value);
+			if (form.elements.runtimeOnly?.checked) value.runtimeOnly = true;
+			else delete value.runtimeOnly;
+			advanced.value = JSON.stringify(value);
+			advanced.dataset.original = advanced.value;
+		} catch (_err) {}
+		return validateAdvancedJson(root);
+	}
 	const value = JSON.stringify(collectEditorFields(form));
 	advanced.value = value;
 	advanced.dataset.original = value;
 	validateAdvancedJson(root);
+}
+
+function isNestedConditionalEditor(form) {
+	return form.elements.nestedConditional?.value === 'true';
 }
 
 function validateAdvancedJson(root) {
@@ -1495,6 +1610,7 @@ function buildActorPathAutocompleteEntries(actor) {
 	addEffectAutocompleteEntries(entries, actor);
 	addItemAutocompleteEntries(entries, actor);
 	addItemTypeAutocompleteEntries(entries, actor);
+	for (const status of CONFIG.statusEffects ?? []) addAutocompleteEntry(entries, `riderStatuses.${status.id}`, localize('RAVE5E.Editor.Autocomplete.CommonActorPath'));
 	if (actor?.flags) addRavePathEntries(entries, actor.flags, 'flags');
 	for (const path of [
 		'activity.name',

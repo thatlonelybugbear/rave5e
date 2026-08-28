@@ -37,6 +37,7 @@
   "RAVE5E.Editor.Match.Hint": "How the conditions are combined.",
   "RAVE5E.Editor.Match.Label": "Match",
   "RAVE5E.Editor.Match.Single": "Single condition",
+  "RAVE5E.Editor.NestedConditional.JSONHint": "This nested conditional is driven entirely by Generated JSON. Edit the JSON below; it will be saved and evaluated as written.",
   "RAVE5E.Editor.Not.Hint": "Invert this condition.",
   "RAVE5E.Editor.Not.Label": "Not",
   "RAVE5E.Editor.Operation.Add": "Add",
