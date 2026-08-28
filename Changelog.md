@@ -1,3 +1,8 @@
+## v14.533.6
+* Added conditional saving throw advantage and disadvantage support, including checks for dnd5e rider statuses such as Poisoned.
+* Added nested conditional support through Generated JSON while keeping the visual condition editor available only for simple conditions.
+* Fixed conditional editor saves when the visual condition group is unavailable.
+
 ## v14.533.5
 * Added per-activity condition evaluation for `activities[<type>]` enchantment changes, making `activity.*` paths available during normal item preparation.
 * Refreshed attack, damage, and save labels after conditional activity changes while preserving enchanted base-damage parts.
